@@ -1,0 +1,73 @@
+{% extends "wellness/base.html" %}
+{% block title %}How the Model Works — MindWell{% endblock %}
+
+{% block content %}
+<section class="mx-auto" style="max-width:52rem">
+  <div class="text-center mb-4 reveal in">
+    <h1 class="font-display fw-semibold display-5 mb-3">Model <span class="grad-text">Transparency</span></h1>
+    <p class="text-muted mx-auto" style="max-width:40rem">We believe you deserve to know exactly what's behind the "Analyze" button. Here are the real numbers — strengths, limits, and all.</p>
+  </div>
+
+  <div class="row g-4 mb-4">
+    <div class="col-md-6"><div class="reveal in glass-card rounded-4 p-4 p-sm-5 h-100">
+      <h2 class="fw-bold fs-5 mb-3">🔧 The pipeline</h2>
+      <ol class="text-muted small lh-lg ps-3 mb-0">
+        <li><strong>Cleaning:</strong> lowercase, strip URLs/punctuation.</li>
+        <li><strong>TF-IDF vectorizer</strong> (1–2 grams, 5,000 features) turns words into numbers.</li>
+        <li><strong>Logistic Regression</strong> (multinomial, balanced classes) predicts low / moderate / high.</li>
+        <li><strong>Group-aware split:</strong> paraphrases of the same example never leak across train/test — the metrics below are honest.</li>
+      </ol>
+    </div></div>
+    <div class="col-md-6"><div class="reveal in glass-card rounded-4 p-4 p-sm-5 h-100">
+      <h2 class="fw-bold fs-5 mb-3">📊 Dataset</h2>
+      <ul class="text-muted small lh-lg ps-3 mb-0">
+        <li><strong>870</strong> labeled student-stress texts (sample dataset, 3 balanced classes).</li>
+        <li><strong>Train:</strong> {{ metrics.n_train }} · <strong>Test:</strong> {{ metrics.n_test }} (held-out phrasings).</li>
+        <li>Retrain anytime: <span class="kbd">python wellness/ml/train.py</span></li>
+        <li>Swap in a real ethically-collected dataset via <span class="kbd">stress_dataset.csv</span> — see README.</li>
+      </ul>
+    </div></div>
+  </div>
+
+  <div class="reveal in glass-card rounded-4 p-4 p-sm-5 mb-4">
+    <h2 class="fw-bold fs-5 mb-1">🎯 Test-set performance</h2>
+    <p class="small text-muted mb-4">Overall accuracy: <strong class="text-violet fs-6">{{ metrics.accuracy|floatformat:2 }}</strong> on {{ metrics.n_test }} unseen texts.</p>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light"><tr><th>Class</th><th>Precision</th><th>Recall</th><th>F1-score</th><th>Samples</th></tr></thead>
+        <tbody>
+          {% for r in rows %}
+          <tr><td class="fw-semibold text-capitalize">{{ r.label }}</td>
+            <td>{{ r.precision|floatformat:2 }}</td><td>{{ r.recall|floatformat:2 }}</td>
+            <td>{{ r.f1|floatformat:2 }}</td><td>{{ r.support }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="reveal in glass-card rounded-4 p-4 p-sm-5 mb-4">
+    <h2 class="fw-bold fs-5 mb-1">🧮 Confusion matrix</h2>
+    <p class="small text-muted mb-4">Rows = true label, columns = predicted label.</p>
+    <div class="table-responsive"><table class="table table-bordered text-center align-middle mb-0" style="max-width:28rem">
+      <thead class="table-light"><tr><th></th>{% for l in labels %}<th class="text-capitalize">{{ l }}</th>{% endfor %}</tr></thead>
+      <tbody>
+        {% for lbl, row in cm_rows %}
+        <tr><th class="table-light text-capitalize">{{ lbl }}</th>
+          {% for v in row %}<td class="{% if v >= 40 %}bg-success bg-opacity-10 fw-bold{% elif v >= 5 %}bg-warning bg-opacity-10{% endif %}">{{ v }}</td>{% endfor %}</tr>
+        {% endfor %}
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="reveal in alert alert-light border rounded-3 small text-muted lh-lg" role="note">
+    <strong class="text-dark">Honest limits:</strong> this model reads <em>word patterns</em>, not minds. It can misread sarcasm,
+    mixed emotions, very short texts, or writing styles unlike its training data. A "low" prediction never means
+    someone is fine, and crisis language is handled by a separate safety check — never by this classifier alone.
+  </div>
+
+  <div class="text-center mt-4">
+    <a href="{% url 'wellness:write' %}" class="btn-gradient">Try it yourself</a>
+  </div>
+</section>
+{% endblock %}

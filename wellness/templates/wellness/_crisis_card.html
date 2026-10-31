@@ -1,0 +1,24 @@
+{# Crisis safety card — shown when crisis language is detected. Calm, clear, actionable. #}
+<div class="rounded-4 p-4 p-sm-5 mb-4 border border-2 border-danger-subtle reveal in" style="background:linear-gradient(135deg,#fff1f2,#ffffff 60%,#faf5ff)">
+  <div class="d-flex gap-3 align-items-start">
+    <div class="rounded-3 bg-danger bg-opacity-10 d-flex align-items-center justify-content-center fs-4 flex-shrink-0" style="width:3rem;height:3rem">🤝</div>
+    <div>
+      <h3 class="font-display fw-semibold fs-5 mb-2">You don't have to face this alone</h3>
+      <p class="text-muted lh-lg small">
+        Some of your words suggest you might be going through something really difficult right now.
+        If you feel unsafe, please reach out <strong>right now</strong> — call emergency services
+        (<a class="fw-bold text-danger text-decoration-none" href="tel:112">112</a>) and talk to someone you trust.
+        Free, confidential help is available 24×7:
+      </p>
+      <div class="row g-3 mt-1">
+        {% for r in crisis_resources %}
+        <div class="col-sm-6"><div class="bg-white rounded-3 p-3 border h-100">
+          <div class="fw-semibold small">{{ r.name }}</div>
+          <a href="tel:{{ r.contact|cut:' '|cut:'/' }}" class="text-danger fw-bold text-decoration-none">{{ r.contact }}</a>
+          <div class="small text-muted">{{ r.detail }}</div>
+        </div></div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>

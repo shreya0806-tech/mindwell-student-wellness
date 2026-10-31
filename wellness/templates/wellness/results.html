@@ -1,0 +1,100 @@
+{% extends "wellness/base.html" %}
+{% block title %}Your Results — MindWell{% endblock %}
+
+{% block content %}
+<section class="mx-auto" style="max-width:48rem">
+  {% if crisis %}
+    {% include "wellness/_crisis_card.html" %}
+  {% endif %}
+
+  <!-- result hero -->
+  <div class="reveal in rounded-4 p-4 p-sm-5 mb-4 text-center position-relative overflow-hidden lvl-{{ label }}">
+    <div class="position-absolute top-0 start-0 w-100 h-100" style="background:radial-gradient(circle at 50% 0%,rgba(255,255,255,.7),transparent 60%)"></div>
+    <div class="position-relative">
+      <div class="d-inline-flex align-items-center gap-2 bg-white bg-opacity-75 rounded-pill px-3 py-1 small fw-bold mb-3" style="letter-spacing:.12em">
+        <span class="rounded-circle lvl-dot-{{ label }} d-inline-block" style="width:.6rem;height:.6rem;animation:tp 1.6s infinite"></span> ANALYSIS COMPLETE
+      </div>
+      <h1 class="font-display fw-semibold fs-2 fs-sm-1 mb-2">{{ label_display }}</h1>
+      {% if mood_display %}
+      <p class="small fw-medium opacity-75 mb-3">You described your mood as <strong>{{ mood_display }}</strong></p>
+      {% endif %}
+      <p class="mx-auto lh-lg" style="max-width:38rem">{{ blurb }}</p>
+
+      <div class="mx-auto mt-4" style="max-width:20rem">
+        <div class="d-flex justify-content-between small fw-semibold opacity-75 mb-1">
+          <span>MODEL SIGNAL</span><span>{% if confidence > 0.75 %}strong{% elif confidence > 0.55 %}fair{% else %}uncertain{% endif %}</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill bg-white" style="width:{% widthratio confidence 1 100 %}%"></div></div>
+        <p class="mt-2 mb-0 opacity-75" style="font-size:.72rem">A rough sense of how clear the language signals were — not a medical score.</p>
+      </div>
+    </div>
+  </div>
+
+  {% if themes %}
+  <div class="reveal in glass-card rounded-4 p-4 p-sm-5 mb-4">
+    <h2 class="fw-bold fs-5 mb-1">What stood out in your words</h2>
+    <p class="small text-muted mb-3">Main themes we noticed — so the suggestions below fit <em>your</em> situation.</p>
+    <div class="d-flex flex-wrap gap-2">
+      {% for t in themes %}<span class="chip">{{ t }}</span>{% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="reveal in glass-card rounded-4 p-4 p-sm-5 mb-4">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
+      <h2 class="fw-bold fs-5 mb-0">Personal suggestions for you</h2>
+      {% if rec_source == "ai" %}<span class="chip">✨ AI-personalized</span>
+      {% else %}<span class="chip" title="Built-in guidance — add an LLM API key to enable AI-personalized suggestions">🌿 Guided support</span>{% endif %}
+    </div>
+    <div class="d-flex flex-column gap-3">
+      {% for r in recommendations %}
+      <div class="d-flex gap-3 p-3 rounded-3 bg-white border">
+        <span class="rounded-3 d-flex align-items-center justify-content-center fw-bold text-violet flex-shrink-0" style="width:2rem;height:2rem;background:linear-gradient(135deg,#e0f2fe,#ede9fe)">{{ forloop.counter }}</span>
+        <p class="mb-0 text-muted lh-lg" style="font-size:.95rem">{{ r }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="reveal in row g-3 mb-4">
+    <div class="col-sm-4"><button class="glass-card rounded-4 p-4 text-center card-lift w-100 border" data-bs-toggle="modal" data-bs-target="#breathModal">
+      <div class="fs-3 mb-2">🫁</div><div class="fw-bold small">Try a 2-Minute<br>Breathing Exercise</div>
+    </button></div>
+    <div class="col-sm-4"><a href="{% url 'wellness:plan' %}" class="glass-card rounded-4 p-4 text-center card-lift d-block text-decoration-none text-reset">
+      <div class="fs-3 mb-2">🗓️</div><div class="fw-bold small">Create My<br>Wellness Plan</div>
+    </a></div>
+    <div class="col-sm-4"><a href="{% url 'wellness:resources' %}#helplines" class="glass-card rounded-4 p-4 text-center card-lift d-block text-decoration-none text-reset">
+      <div class="fs-3 mb-2">🤝</div><div class="fw-bold small">Find Professional<br>Support</div>
+    </a></div>
+  </div>
+
+  <div class="reveal in glass-card rounded-4 p-4 p-sm-5 mb-4">
+    {% if saved %}
+      <div class="d-flex align-items-center gap-2 text-success fw-semibold">✓ Saved to your private history. Review or delete it anytime in <a href="{% url 'wellness:history' %}">History</a>.</div>
+    {% else %}
+      <h3 class="fw-bold fs-6 mb-1">Keep this in your private history?</h3>
+      <p class="small text-muted mb-3">Optional. Saved on this browser only, under an anonymous session — never tied to your name. You can delete it anytime.</p>
+      <form method="post" action="{% url 'wellness:save_assessment' %}" class="d-flex flex-wrap align-items-center gap-3">
+        {% csrf_token %}
+        <label class="d-flex align-items-center gap-2 small text-muted">
+          <input type="checkbox" name="keep_text" class="form-check-input mt-0"> Also save my written words (otherwise only the result is kept)
+        </label>
+        <button type="submit" class="btn-soft btn-sm">Save privately</button>
+      </form>
+    {% endif %}
+  </div>
+
+  <div class="reveal in alert alert-light border rounded-3 small text-muted lh-lg mb-4" role="note">
+    <strong class="text-dark">Please remember:</strong> this is a rough estimate from a text classifier, not a clinical diagnosis.
+    Language-based predictions can be inaccurate — a "low" result doesn't mean everything is fine, and a "high"
+    result doesn't define you. If difficult feelings persist, please talk to a qualified counselor or mental health professional.
+  </div>
+
+  <div class="reveal in text-center">
+    <a href="{% url 'wellness:write' %}" class="btn-soft">↺ &nbsp;Write again</a>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block modals %}{% include "wellness/_breath_modal.html" %}{% endblock %}

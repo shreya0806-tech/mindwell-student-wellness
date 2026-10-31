@@ -1,0 +1,10 @@
+{% extends "wellness/base.html" %}
+{% block title %}Something went wrong — MindWell{% endblock %}
+{% block content %}
+<section class="mx-auto text-center py-5" style="max-width:32rem">
+  <div class="fs-1 mb-3">🌧️</div>
+  <h1 class="font-display fw-semibold fs-3 mb-3">A small hiccup</h1>
+  <p class="text-muted mb-4">{{ message|default:"Something didn't work as expected. Please try again in a moment." }}</p>
+  <a href="{% url 'wellness:home' %}" class="btn-gradient">Back to Home</a>
+</section>
+{% endblock %}

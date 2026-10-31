@@ -1,0 +1,10 @@
+# Core
+Django>=5.0,<7.0
+
+# Machine learning
+scikit-learn>=1.3
+pandas>=2.0
+numpy>=1.24
+
+# PDF run-guide generation (dev utility only)
+fpdf2>=2.7

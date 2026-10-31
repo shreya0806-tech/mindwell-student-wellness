@@ -1,0 +1,74 @@
+{% extends "wellness/base.html" %}
+{% block title %}My Wellness Plan — MindWell{% endblock %}
+
+{% block content %}
+<section class="mx-auto" style="max-width:48rem">
+  <div class="text-center mb-4 reveal in">
+    <h1 class="font-display fw-semibold display-5 mb-2">My Wellness <span class="grad-text">Plan</span></h1>
+    <p class="text-muted">{{ today|date:"l, d F Y" }} · small steps, gently done</p>
+  </div>
+
+  <div class="reveal in glass-card rounded-4 p-4 p-sm-5 mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <span class="fw-bold">Today's progress</span>
+      <span class="fw-bold text-violet" id="pctLabel">{{ pct }}%</span>
+    </div>
+    <div class="progress-track mb-4"><div class="progress-fill" id="pctBar" style="width:{{ pct }}%"></div></div>
+    <div class="d-flex flex-column gap-3" id="taskList">
+      {% for t in tasks %}
+      <button class="task-row {% if t.done %}done{% endif %} border" data-id="{{ t.id }}">
+        <span class="check-dot">✓</span>
+        <span class="flex-grow-1">
+          <span class="task-title d-block fw-bold">{{ t.title }}</span>
+          <span class="d-block small text-muted">{{ t.detail }}</span>
+        </span>
+        <span class="chip flex-shrink-0 d-none d-sm-inline-flex">{{ t.category }}</span>
+      </button>
+      {% endfor %}
+    </div>
+    <div id="doneMsg" class="alert alert-success rounded-3 mt-4 mb-0 {% if pct < 100 %}d-none{% endif %}" role="alert">
+      🎉 Beautiful — you completed your whole plan today. Be proud of yourself.
+    </div>
+  </div>
+
+  <div class="reveal in row g-3">
+    <div class="col-sm-6"><button class="glass-card rounded-4 p-4 text-center card-lift w-100 border" data-bs-toggle="modal" data-bs-target="#breathModal">
+      <div class="fs-3 mb-2">🫁</div><div class="fw-bold small">2-Minute Breathing</div>
+    </button></div>
+    <div class="col-sm-6"><a href="{% url 'wellness:assistant' %}" class="glass-card rounded-4 p-4 text-center card-lift d-block text-decoration-none text-reset">
+      <div class="fs-3 mb-2">💬</div><div class="fw-bold small">Talk to the Assistant</div>
+    </a></div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block modals %}{% include "wellness/_breath_modal.html" %}{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+  var total = {{ total }};
+  function refresh(done) {
+    var pct = total ? Math.round(done / total * 100) : 0;
+    document.getElementById('pctBar').style.width = pct + '%';
+    document.getElementById('pctLabel').textContent = pct + '%';
+    document.getElementById('doneMsg').classList.toggle('d-none', pct < 100);
+  }
+  document.querySelectorAll('#taskList .task-row').forEach(function (row) {
+    row.addEventListener('click', function () {
+      fetch('/plan/toggle/' + row.dataset.id + '/', {
+        method: 'POST',
+        headers: { 'X-CSRFToken': getCookie('csrftoken'), 'X-Requested-With': 'XMLHttpRequest' }
+      })
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        row.classList.toggle('done', d.done);
+        var done = document.querySelectorAll('#taskList .task-row.done').length;
+        refresh(done);
+      });
+    });
+  });
+})();
+</script>
+{% endblock %}

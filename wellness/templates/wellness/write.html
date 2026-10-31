@@ -1,0 +1,94 @@
+{% extends "wellness/base.html" %}
+{% block title %}Write Your Thoughts — MindWell{% endblock %}
+
+{% block content %}
+<section class="mx-auto" style="max-width:48rem">
+  <div class="text-center mb-4 reveal in">
+    <h1 class="font-display fw-semibold display-5 mb-3">Write Your <span class="grad-text">Thoughts</span></h1>
+    <p class="text-muted fs-5 mx-auto" style="max-width:36rem">Let it all out — exactly as it feels. There's no wrong way to do this.</p>
+  </div>
+
+  {% if error %}
+  <div class="reveal in alert alert-warning rounded-3 mb-4" role="alert">{{ error }}</div>
+  {% endif %}
+
+  <form method="post" action="{% url 'wellness:analyze' %}" id="writeForm" class="reveal in glass-card rounded-4 p-4 p-sm-5">
+    {% csrf_token %}
+
+    <label class="form-label fw-bold mb-3">How would you describe your mood right now? <span class="fw-normal text-muted small">(optional)</span></label>
+    <div class="row row-cols-5 g-2 g-sm-3 mb-4" id="moodGrid">
+      {% for key, label in mood_labels.items %}
+      <div class="col"><div class="mood-pill h-100" data-mood="{{ key }}" role="button" tabindex="0" aria-label="{{ label }}">
+        <span class="face">{% if key == 'happy' %}😊{% elif key == 'okay' %}🙂{% elif key == 'anxious' %}😟{% elif key == 'sad' %}😢{% else %}😵{% endif %}</span>
+        <span class="lbl">{{ label }}</span>
+      </div></div>
+      {% endfor %}
+    </div>
+    <input type="hidden" name="mood" id="moodInput" value="{{ mood|default:'' }}">
+
+    <label class="form-label fw-bold mb-2" for="textInput">What's on your mind?</label>
+    <div class="position-relative">
+      <textarea id="textInput" name="text" rows="9" maxlength="2000" required
+        class="form-control mw-input p-4 fs-6 lh-lg" style="resize:vertical"
+        placeholder="Example: I have exams next week, I cannot concentrate on studying, I feel overwhelmed, and I am worried about disappointing my parents.">{{ text|default:'' }}</textarea>
+      <div class="position-absolute bottom-0 end-0 m-3 small text-muted"><span id="charCount">0</span> / 2000</div>
+    </div>
+    <p class="small text-muted mt-2 mb-4">Tip: a few honest sentences work best — write like you're talking to a friend.</p>
+
+    <div class="rounded-3 p-4 mb-4 d-flex gap-3 border" style="background:linear-gradient(135deg,#f0f9ff,#faf5ff);border-color:#e9d5ff !important">
+      <div class="fs-4">🔒</div>
+      <div class="small text-muted lh-lg">
+        <strong class="text-dark">Your privacy matters.</strong>
+        What you write is analyzed on this server only to show you <em>your</em> result.
+        Nothing is shared with teachers, parents, or other students. Saving to history is
+        <strong>opt-in</strong> — and you can delete everything, anytime.
+      </div>
+    </div>
+
+    <button type="submit" id="analyzeBtn" class="btn-gradient w-100 fs-5 py-3">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+      Analyze My Stress
+    </button>
+  </form>
+
+  <!-- loading overlay -->
+  <div id="loadingOverlay" class="d-none position-fixed top-0 start-0 w-100 h-100 align-items-center justify-content-center p-3" style="z-index:1080;background:rgba(30,42,74,.45);backdrop-filter:blur(4px)">
+    <div class="glass-card rounded-4 p-5 text-center bg-white" style="max-width:22rem">
+      <div class="breath-stage mb-4 mx-auto" style="width:7rem;height:7rem">
+        <div class="breath-circle" style="animation:floaty 2.5s ease-in-out infinite"><span class="fs-2">🧠</span></div>
+      </div>
+      <h3 class="font-display fw-semibold fs-5 mb-2">Reading your words with care…</h3>
+      <p class="small text-muted mb-0">Analyzing tone, themes &amp; stress signals.<br>This takes just a moment.</p>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+  var grid = document.getElementById('moodGrid');
+  var input = document.getElementById('moodInput');
+  var pills = grid.querySelectorAll('.mood-pill');
+  function select(key) {
+    input.value = (input.value === key) ? '' : key;
+    pills.forEach(function (p) { p.classList.toggle('selected', p.dataset.mood === input.value); });
+  }
+  pills.forEach(function (p) {
+    p.addEventListener('click', function () { select(p.dataset.mood); });
+    p.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(p.dataset.mood); } });
+    if (p.dataset.mood === input.value) p.classList.add('selected');
+  });
+
+  var ta = document.getElementById('textInput');
+  var cc = document.getElementById('charCount');
+  function upd() { cc.textContent = ta.value.length; }
+  ta.addEventListener('input', upd); upd();
+
+  document.getElementById('writeForm').addEventListener('submit', function () {
+    var o = document.getElementById('loadingOverlay');
+    o.classList.remove('d-none'); o.classList.add('d-flex');
+  });
+})();
+</script>
+{% endblock %}

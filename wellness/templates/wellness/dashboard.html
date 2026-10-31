@@ -1,0 +1,111 @@
+{% extends "wellness/base.html" %}
+{% block title %}Dashboard — MindWell{% endblock %}
+
+{% block content %}
+<!-- greeting -->
+<section class="reveal mb-4">
+  <div class="rounded-4 p-4 p-sm-5 text-white position-relative overflow-hidden" style="background:linear-gradient(135deg,#38bdf8,#818cf8 55%,#34d399)">
+    <div class="position-absolute rounded-circle bg-white opacity-10" style="width:16rem;height:16rem;right:-3rem;top:-3rem"></div>
+    <div class="position-relative">
+      <p class="opacity-75 fw-medium mb-1">Welcome back to your calm corner 🌤️</p>
+      <h1 class="font-display fw-semibold fs-2 fs-sm-1 mb-3">How are you feeling today?</h1>
+      <p class="opacity-75 mb-4" style="max-width:36rem">Whatever it is — heavy, hopeful, or somewhere in between — this is a safe place to put it into words.</p>
+      <a href="{% url 'wellness:write' %}" class="btn btn-light fw-bold fs-5 rounded-3 px-4 py-2">✍️ Share How You Feel</a>
+    </div>
+  </div>
+</section>
+
+<!-- motivation -->
+<section class="reveal mb-4">
+  <div class="glass-card rounded-4 p-4 d-flex gap-3 align-items-start">
+    <div class="rounded-3 bg-warning bg-opacity-25 d-flex align-items-center justify-content-center fs-4 flex-shrink-0" style="width:3rem;height:3rem">☀️</div>
+    <div>
+      <div class="small fw-bold text-warning mb-1" style="letter-spacing:.15em">TODAY'S MOTIVATION</div>
+      <p class="font-display fs-5 mb-0 lh-base">"{{ motivation }}"</p>
+    </div>
+  </div>
+</section>
+
+<div class="row g-4">
+  <div class="col-lg-8">
+    <h2 class="reveal font-display fw-semibold fs-4 mb-3">Wellness tips for today</h2>
+    <div class="row g-3 mb-5">
+      {% for tip in tips %}
+      <div class="col-sm-6"><div class="reveal glass-card rounded-4 p-4 h-100 card-lift">
+        <div class="fs-3 mb-2">{{ tip.icon }}</div>
+        <h3 class="fw-bold fs-6 mb-2">{{ tip.title }}</h3>
+        <p class="small text-muted lh-lg mb-0">{{ tip.text }}</p>
+      </div></div>
+      {% endfor %}
+    </div>
+
+    <h2 class="reveal font-display fw-semibold fs-4 mb-3">Quick relaxation exercises</h2>
+    <div class="row g-3">
+      <div class="col-sm-4"><div class="reveal glass-card rounded-4 p-4 text-center h-100 card-lift">
+        <div class="fs-3 mb-2">🫁</div><h3 class="fw-bold fs-6 mb-1">Box Breathing</h3>
+        <p class="small text-muted mb-3">2 minutes · calms nerves fast</p>
+        <button class="btn-soft btn-sm w-100" data-bs-toggle="modal" data-bs-target="#breathModal">Start now</button>
+      </div></div>
+      <div class="col-sm-4"><div class="reveal reveal-d1 glass-card rounded-4 p-4 text-center h-100 card-lift">
+        <div class="fs-3 mb-2">🧘</div><h3 class="fw-bold fs-6 mb-1">5-4-3-2-1 Grounding</h3>
+        <p class="small text-muted mb-3">See 5, hear 4, touch 3, smell 2, taste 1</p>
+        <a href="{% url 'wellness:resources' %}#grounding" class="btn-soft btn-sm w-100">Learn how</a>
+      </div></div>
+      <div class="col-sm-4"><div class="reveal reveal-d2 glass-card rounded-4 p-4 text-center h-100 card-lift">
+        <div class="fs-3 mb-2">💆</div><h3 class="fw-bold fs-6 mb-1">60-sec Reset</h3>
+        <p class="small text-muted mb-3">Shoulders, neck &amp; jaw release</p>
+        <a href="{% url 'wellness:resources' %}#relax" class="btn-soft btn-sm w-100">Learn how</a>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="d-flex flex-column gap-4">
+      <div class="reveal glass-card rounded-4 p-4">
+        <h3 class="fw-bold fs-6 mb-1">Quick mood check-in</h3>
+        <p class="small text-muted mb-3">One tap. Private. Optional.</p>
+        <form method="post" action="{% url 'wellness:log_mood' %}">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{% url 'wellness:dashboard' %}">
+          <div class="row row-cols-5 g-2">
+            {% for key, label in mood_labels.items %}
+            <div class="col"><button type="submit" name="mood" value="{{ key }}" class="mood-pill w-100" title="{{ label }}">
+              <span class="face">{% if key == 'happy' %}😊{% elif key == 'okay' %}🙂{% elif key == 'anxious' %}😟{% elif key == 'sad' %}😢{% else %}😵{% endif %}</span>
+              <span class="lbl">{{ label }}</span>
+            </button></div>
+            {% endfor %}
+          </div>
+        </form>
+      </div>
+
+      <div class="reveal glass-card rounded-4 p-4">
+        <h3 class="fw-bold fs-6 mb-3">Recent check-ins</h3>
+        {% if recent %}
+          <div class="d-flex flex-column gap-2">
+          {% for a in recent %}
+            <a href="{% url 'wellness:history' %}" class="d-flex align-items-center gap-3 p-3 rounded-3 bg-white border text-decoration-none text-reset">
+              <span class="rounded-circle flex-shrink-0 lvl-dot-{{ a.stress_label }}" style="width:.8rem;height:.8rem"></span>
+              <span><span class="d-block fw-semibold small text-capitalize">{{ a.stress_label }} stress</span>
+              <span class="d-block text-muted" style="font-size:.75rem">{{ a.created_at|date:"d M, h:i A" }}</span></span>
+            </a>
+          {% endfor %}
+          </div>
+        {% else %}
+          <p class="small text-muted lh-lg">No check-ins yet. When you analyze your feelings, you can optionally save results here to track your journey.</p>
+          <a href="{% url 'wellness:write' %}" class="btn-soft btn-sm w-100">Do your first check-in</a>
+        {% endif %}
+      </div>
+
+      <div class="reveal rounded-4 p-4 text-white" style="background:linear-gradient(135deg,#8b5cf6,#6366f1)">
+        <div class="fs-3 mb-2">💬</div>
+        <h3 class="fw-bold fs-6 mb-1">Need to talk it out?</h3>
+        <p class="small opacity-75 mb-3">MindWell's assistant listens without judgment, anytime.</p>
+        <a href="{% url 'wellness:assistant' %}" class="btn btn-light btn-sm fw-bold rounded-3">Open Assistant</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block modals %}{% include "wellness/_breath_modal.html" %}{% endblock %}

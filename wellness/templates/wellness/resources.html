@@ -1,0 +1,191 @@
+{% extends "wellness/base.html" %}
+{% block title %}Resources — MindWell{% endblock %}
+
+{% block content %}
+<section>
+  <div class="text-center mb-4 reveal in">
+    <h1 class="font-display fw-semibold display-5 mb-3">Wellness <span class="grad-text">Resources</span></h1>
+    <p class="text-muted mx-auto" style="max-width:38rem">Practical guides for the moments that feel hard — breathing, studying, sleeping, and finding real human help.</p>
+  </div>
+
+  <ul class="nav nav-pills mw-pills justify-content-center flex-wrap gap-2 mb-4 reveal in" role="tablist">
+    <li class="nav-item"><button class="nav-link active" data-bs-toggle="pill" data-bs-target="#tab-calm" type="button">🧘 Calm &amp; Breathing</button></li>
+    <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-study" type="button">📚 Study &amp; Exams</button></li>
+    <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-sleep" type="button">😴 Sleep &amp; Rest</button></li>
+    <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-help" type="button">🤝 Get Help</button></li>
+  </ul>
+
+  <div class="tab-content">
+    <!-- CALM -->
+    <div class="tab-pane fade show active" id="tab-calm">
+      <div class="row g-4">
+        <div class="col-md-6"><div class="reveal in glass-card rounded-4 p-4 p-sm-5 h-100">
+          <h3 class="fw-bold fs-5 mb-3">🫁 Box Breathing (2 min)</h3>
+          <ol class="text-muted lh-lg small ps-3 mb-4">
+            <li>Sit comfortably, unclench your jaw, drop your shoulders.</li>
+            <li><strong>Breathe in</strong> through your nose for <strong>4 counts</strong>.</li>
+            <li><strong>Hold</strong> for <strong>4 counts</strong>.</li>
+            <li><strong>Breathe out</strong> slowly through your mouth for <strong>4 counts</strong>.</li>
+            <li><strong>Hold</strong> empty for <strong>4 counts</strong>. Repeat 4 rounds.</li>
+          </ol>
+          <button class="btn-gradient" data-bs-toggle="modal" data-bs-target="#breathModal">Start guided session</button>
+        </div></div>
+        <div class="col-md-6" id="grounding"><div class="reveal in glass-card rounded-4 p-4 p-sm-5 h-100">
+          <h3 class="fw-bold fs-5 mb-3">🌿 5-4-3-2-1 Grounding</h3>
+          <p class="small text-muted lh-lg">When thoughts race, anchor yourself in your senses. Slowly name:</p>
+          <ul class="text-muted lh-lg small">
+            <li><strong>5</strong> things you can <strong>see</strong></li>
+            <li><strong>4</strong> things you can <strong>hear</strong></li>
+            <li><strong>3</strong> things you can <strong>touch</strong></li>
+            <li><strong>2</strong> things you can <strong>smell</strong></li>
+            <li><strong>1</strong> thing you can <strong>taste</strong></li>
+          </ul>
+          <p class="small text-muted mb-0">Used widely for acute anxiety — it pulls attention back to the present moment.</p>
+        </div></div>
+        <div class="col-md-6" id="relax"><div class="reveal in glass-card rounded-4 p-4 p-sm-5 h-100">
+          <h3 class="fw-bold fs-5 mb-3">💆 60-Second Body Reset</h3>
+          <ol class="text-muted lh-lg small ps-3 mb-0">
+            <li>Roll your shoulders back 5 times, then forward 5 times.</li>
+            <li>Tilt your head ear-to-shoulder, hold 10 seconds each side.</li>
+            <li>Unclench your jaw — let your tongue rest off the roof of your mouth.</li>
+            <li>Shake out your hands like flicking off water, 10 seconds.</li>
+            <li>One slow breath in, one long sigh out. Done.</li>
+          </ol>
+        </div></div>
+        <div class="col-md-6"><div class="reveal in glass-card rounded-4 p-4 p-sm-5 h-100">
+          <h3 class="fw-bold fs-5 mb-3">🌅 5-Minute Morning Calm</h3>
+          <ol class="text-muted lh-lg small ps-3 mb-0">
+            <li>Before touching your phone: 5 slow breaths.</li>
+            <li>Stretch arms overhead, 20 seconds.</li>
+            <li>Drink a full glass of water.</li>
+            <li>Write today's <em>one</em> most important task on paper.</li>
+            <li>Step into daylight (or open a window) for a minute.</li>
+          </ol>
+        </div></div>
+      </div>
+    </div>
+
+    <!-- STUDY -->
+    <div class="tab-pane fade" id="tab-study">
+      <div class="row g-4">
+        <div class="col-md-6"><div class="glass-card rounded-4 p-4 p-sm-5 h-100">
+          <h3 class="fw-bold fs-5 mb-3">📚 Beating Exam Anxiety</h3>
+          <ul class="text-muted lh-lg small">
+            <li><strong>Shrink the syllabus:</strong> list topics, rank by weightage, start with high-value ones.</li>
+            <li><strong>Active recall:</strong> close the book and write what you remember — far stronger than re-reading.</li>
+            <li><strong>Pomodoro:</strong> 25 min focus + 5 min break. After 4 rounds, take 20 minutes.</li>
+            <li><strong>Mock under time:</strong> one timed practice paper removes most exam-day surprise.</li>
+            <li><strong>The night before:</strong> light revision only, then sleep. Cramming all night backfires.</li>
+          </ul>
+        </div></div>
+        <div class="col-md-6"><div class="glass-card rounded-4 p-4 p-sm-5 h-100">
+          <h3 class="fw-bold fs-5 mb-3">⏰ Time Management Basics</h3>
+          <ul class="text-muted lh-lg small">
+            <li><strong>Tonight:</strong> time-block tomorrow — study, meals, rest, sleep.</li>
+            <li><strong>Eat the frog:</strong> hardest task first, when your mind is freshest.</li>
+            <li><strong>Two-minute rule:</strong> if it takes under 2 minutes, do it now.</li>
+            <li><strong>Weekly review:</strong> 15 minutes every Sunday to plan the week.</li>
+            <li><strong>Protect one rest day</strong> (or half-day) — burnout destroys more marks than a day off.</li>
+          </ul>
+        </div></div>
+        <div class="col-12"><div class="glass-card rounded-4 p-4 p-sm-5">
+          <h3 class="fw-bold fs-5 mb-3">🧠 When you can't concentrate</h3>
+          <div class="row g-3">
+            <div class="col-sm-4"><div class="rounded-3 bg-white border p-3 h-100"><strong class="small">Phone in another room</strong><p class="small text-muted mb-0 mt-1">Even a silent phone nearby drains attention.</p></div></div>
+            <div class="col-sm-4"><div class="rounded-3 bg-white border p-3 h-100"><strong class="small">Single-task sprints</strong><p class="small text-muted mb-0 mt-1">One topic, 25 minutes, no switching.</p></div></div>
+            <div class="col-sm-4"><div class="rounded-3 bg-white border p-3 h-100"><strong class="small">Move first</strong><p class="small text-muted mb-0 mt-1">A 10-min walk before studying boosts focus.</p></div></div>
+          </div>
+        </div></div>
+      </div>
+    </div>
+
+    <!-- SLEEP -->
+    <div class="tab-pane fade" id="tab-sleep">
+      <div class="row g-4">
+        <div class="col-md-6"><div class="glass-card rounded-4 p-4 p-sm-5 h-100">
+          <h3 class="fw-bold fs-5 mb-3">😴 Sleep Hygiene Guide</h3>
+          <ul class="text-muted lh-lg small">
+            <li><strong>Fixed timing:</strong> same sleep &amp; wake time daily — even weekends.</li>
+            <li><strong>Wind down 30 min:</strong> dim lights, no phone, light stretching or reading.</li>
+            <li><strong>Cool, dark room;</strong> avoid caffeine after 4 PM.</li>
+            <li><strong>4-7-8 breathing</strong> in bed: in 4, hold 7, out 8 — 4 rounds.</li>
+            <li><strong>Can't sleep after 20 min?</strong> Get up, do something calm in dim light, return when drowsy.</li>
+          </ul>
+        </div></div>
+        <div class="col-md-6"><div class="glass-card rounded-4 p-4 p-sm-5 h-100">
+          <h3 class="fw-bold fs-5 mb-3">🔋 Rest Without Guilt</h3>
+          <p class="small text-muted lh-lg">Rest is not laziness — it's when your brain consolidates learning and repairs stress damage. Signs you need real rest, not more coffee:</p>
+          <ul class="text-muted lh-lg small">
+            <li>Reading the same line three times</li>
+            <li>Irritability over small things</li>
+            <li>Headaches, heavy eyes, shallow breathing</li>
+          </ul>
+          <p class="small text-muted mb-0">Take a 20-minute nap (set an alarm) or a proper evening off. You'll return sharper.</p>
+        </div></div>
+      </div>
+    </div>
+
+    <!-- HELP -->
+    <div class="tab-pane fade" id="tab-help">
+      <div class="row g-4" id="helplines">
+        <div class="col-12"><div class="rounded-4 p-4 p-sm-5 border border-2 border-danger-subtle" style="background:linear-gradient(135deg,#fff1f2,#fff)">
+          <h3 class="fw-bold fs-5 mb-2">🆘 In crisis? Reach out now.</h3>
+          <p class="small text-muted lh-lg mb-4">If you or someone you know may be in danger, call emergency services (<a class="fw-bold text-danger text-decoration-none" href="tel:112">112</a>) and stay with a trusted person. These helplines are free and confidential:</p>
+          <div class="row g-3">
+            {% for r in crisis_resources %}
+            <div class="col-sm-6 col-lg-4"><div class="bg-white rounded-3 p-4 border h-100">
+              <div class="fw-bold small mb-1">{{ r.name }}</div>
+              <a href="tel:{{ r.contact|cut:' '|cut:'/' }}" class="text-danger fw-bold fs-5 text-decoration-none">{{ r.contact }}</a>
+              <div class="small text-muted mt-1">{{ r.detail }}</div>
+            </div></div>
+            {% endfor %}
+          </div>
+        </div></div>
+        <div class="col-md-6"><div class="glass-card rounded-4 p-4 p-sm-5 h-100">
+          <h3 class="fw-bold fs-5 mb-3">🎓 Finding a Counselor</h3>
+          <ul class="text-muted lh-lg small">
+            <li><strong>Campus counseling cell:</strong> most colleges offer free, confidential sessions — check your student portal or notice board.</li>
+            <li><strong>Ask a trusted teacher or mentor</strong> for a referral; they've guided students through this before.</li>
+            <li><strong>What to expect:</strong> a private conversation, no judgment, no forced advice — you set the pace.</li>
+            <li><strong>Cost worry?</strong> Government hospitals and NGOs (like iCall) offer low-cost or free support.</li>
+          </ul>
+        </div></div>
+        <div class="col-md-6"><div class="glass-card rounded-4 p-4 p-sm-5 h-100">
+          <h3 class="fw-bold fs-5 mb-3">💬 How to Help a Friend</h3>
+          <ul class="text-muted lh-lg small">
+            <li><strong>Listen first.</strong> "I'm here. Tell me what's going on" beats instant advice.</li>
+            <li><strong>Don't minimize:</strong> avoid "just relax" — try "that sounds really tough."</li>
+            <li><strong>Stay with them</strong> if they mention self-harm; help them call a helpline.</li>
+            <li><strong>Follow up</strong> the next day. Being remembered matters enormously.</li>
+          </ul>
+        </div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-5">
+    <h2 class="font-display fw-semibold fs-4 text-center mb-4 reveal in">Common questions</h2>
+    <div class="accordion mw-acc mx-auto reveal in" style="max-width:48rem" id="faqAcc">
+      <div class="accordion-item">
+        <h3 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#fq1">Is my data really private?</button></h3>
+        <div id="fq1" class="accordion-collapse collapse" data-bs-parent="#faqAcc"><div class="accordion-body text-muted small lh-lg">Yes. There's no account system — history is tied to an anonymous browser session on this device. Nothing is shared with teachers, parents, or other students, and you can wipe everything with one tap in History.</div></div>
+      </div>
+      <div class="accordion-item">
+        <h3 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#fq2">Can the stress analysis be wrong?</button></h3>
+        <div id="fq2" class="accordion-collapse collapse" data-bs-parent="#faqAcc"><div class="accordion-body text-muted small lh-lg">Absolutely — it's a statistical estimate from word patterns, not a diagnosis. Sarcasm, mixed feelings, and short texts can all confuse it. Treat it as a conversation starter with yourself, not a verdict.</div></div>
+      </div>
+      <div class="accordion-item">
+        <h3 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#fq3">Does MindWell replace a counselor?</button></h3>
+        <div id="fq3" class="accordion-collapse collapse" data-bs-parent="#faqAcc"><div class="accordion-body text-muted small lh-lg">No. MindWell is a self-help companion for everyday stress. For persistent low mood, anxiety, or any crisis, a qualified counselor or mental health professional is the right next step — and reaching out is a sign of strength.</div></div>
+      </div>
+      <div class="accordion-item">
+        <h3 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#fq4">I got a "high" result and feel scared. What now?</button></h3>
+        <div id="fq4" class="accordion-collapse collapse" data-bs-parent="#faqAcc"><div class="accordion-body text-muted small lh-lg">First, breathe — a label doesn't define you. Try the 2-minute breathing exercise, pick one tiny task for today, and talk to someone you trust. If the heaviness stays, please contact your campus counselor or one of the helplines above.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block modals %}{% include "wellness/_breath_modal.html" %}{% endblock %}

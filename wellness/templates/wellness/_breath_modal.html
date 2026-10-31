@@ -1,0 +1,19 @@
+{# Guided breathing exercise — Bootstrap modal #}
+<div class="modal fade" id="breathModal" tabindex="-1" aria-labelledby="breathTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width:26rem">
+    <div class="modal-content glass-card rounded-4 border-0">
+      <div class="modal-body text-center p-4 p-sm-5 position-relative">
+        <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close"></button>
+        <h3 class="font-display fw-semibold fs-4 mb-1" id="breathTitle">2-Minute Breathing</h3>
+        <p class="small text-muted mb-4">Follow the circle. In through the nose, out through the mouth.</p>
+        <div class="breath-stage mb-4">
+          <div class="breath-halo h1"></div>
+          <div class="breath-halo h2"></div>
+          <div id="breathCircle" class="breath-circle"><span id="breathCount">4</span></div>
+        </div>
+        <p id="breathLabel" class="fw-semibold text-violet mb-4">Get comfortable…</p>
+        <button type="button" class="btn-soft w-100" data-bs-dismiss="modal">Finish</button>
+      </div>
+    </div>
+  </div>
+</div>

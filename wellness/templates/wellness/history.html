@@ -1,0 +1,148 @@
+{% extends "wellness/base.html" %}
+{% block title %}History — MindWell{% endblock %}
+{% block head %}<script src="/static/wellness/vendor/chart.umd.min.js"></script>{% endblock %}
+
+{% block content %}
+<section class="mx-auto" style="max-width:56rem">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4 reveal in">
+    <div>
+      <h1 class="font-display fw-semibold display-6 mb-1">Your <span class="grad-text">Journey</span></h1>
+      <p class="text-muted mb-0">Private to this browser · optional · deletable anytime</p>
+    </div>
+    {% if has_data %}
+    <button class="btn btn-outline-danger btn-sm rounded-3" data-bs-toggle="modal" data-bs-target="#deleteModal">🗑 Delete my data</button>
+    {% endif %}
+  </div>
+
+  {% if not has_data %}
+  <div class="reveal in glass-card rounded-4 p-5 text-center">
+    <div class="fs-1 mb-3">🌱</div>
+    <h2 class="font-display fw-semibold fs-4 mb-2">Nothing saved yet</h2>
+    <p class="text-muted mb-4 mx-auto" style="max-width:28rem">Your history is empty because tracking is <strong>opt-in</strong>. After your next analysis, choose "Save privately" and your journey will appear here.</p>
+    <a href="{% url 'wellness:write' %}" class="btn-gradient">Do a check-in</a>
+  </div>
+  {% else %}
+
+  <!-- trend chart -->
+  <div class="reveal in glass-card rounded-4 p-4 p-sm-5 mb-4">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+      <h2 class="fw-bold fs-5 mb-0">📈 14-day stress trend</h2>
+      <span class="small text-muted">1 = low · 2 = moderate · 3 = high</span>
+    </div>
+    <div style="height:16rem"><canvas id="trendChart"></canvas></div>
+    <p class="small text-muted mt-3 mb-0">Lower is calmer. Gaps mean no saved check-in that day — that's perfectly fine.</p>
+  </div>
+
+  <div class="row g-4">
+    <!-- assessments -->
+    <div class="col-md-7">
+      <h2 class="reveal in font-display fw-semibold fs-5 mb-3">Past check-ins</h2>
+      <div class="d-flex flex-column gap-3">
+        {% for a in assessments %}
+        <div class="reveal in glass-card rounded-4 p-4">
+          <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+            <span class="rounded-circle lvl-dot-{{ a.stress_label }} d-inline-block" style="width:.7rem;height:.7rem"></span>
+            <strong class="text-capitalize">{{ a.stress_label }} stress</strong>
+            {% if a.mood %}<span class="chip">{{ a.mood|title }}</span>{% endif %}
+            <span class="small text-muted ms-auto">{{ a.created_at|date:"d M Y, h:i A" }}</span>
+          </div>
+          {% if a.themes %}
+          <div class="d-flex flex-wrap gap-1 mb-2">{% for t in a.themes %}<span class="badge rounded-pill bg-light text-dark border fw-normal">{{ t }}</span>{% endfor %}</div>
+          {% endif %}
+          {% if a.text_saved and a.journal_text %}
+          <details class="small"><summary class="text-violet fw-semibold" style="cursor:pointer">View my words</summary>
+          <p class="text-muted mt-2 mb-0 lh-lg fst-italic">"{{ a.journal_text|truncatechars:400 }}"</p></details>
+          {% endif %}
+          {% if a.recommendations %}
+          <details class="small mt-1"><summary class="text-violet fw-semibold" style="cursor:pointer">View suggestions from that day</summary>
+          <ul class="text-muted mt-2 mb-0 lh-lg ps-3">{% for r in a.recommendations|slice:":4" %}<li>{{ r|truncatechars:140 }}</li>{% endfor %}</ul></details>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- mood journal -->
+    <div class="col-md-5">
+      <h2 class="reveal in font-display fw-semibold fs-5 mb-3">Mood journal</h2>
+      {% if moods %}
+      <div class="d-flex flex-column gap-2">
+        {% for m in moods %}
+        <div class="reveal in rounded-3 bg-white border p-3 d-flex align-items-center gap-3">
+          <span class="fs-4">{% if m.mood == 'happy' %}😊{% elif m.mood == 'okay' %}🙂{% elif m.mood == 'anxious' %}😟{% elif m.mood == 'sad' %}😢{% else %}😵{% endif %}</span>
+          <span><span class="d-block fw-semibold small text-capitalize">{{ m.mood }}</span>
+          <span class="d-block text-muted" style="font-size:.72rem">{{ m.created_at|date:"d M, h:i A" }}{% if m.note %} · {{ m.note|truncatechars:60 }}{% endif %}</span></span>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="reveal in glass-card rounded-4 p-4 text-center">
+        <p class="small text-muted mb-3">Log a quick mood from the dashboard to start your journal.</p>
+        <a href="{% url 'wellness:dashboard' %}" class="btn-soft btn-sm">Go to dashboard</a>
+      </div>
+      {% endif %}
+
+      <div class="reveal in rounded-4 p-4 mt-4 text-white" style="background:linear-gradient(135deg,#8b5cf6,#6366f1)">
+        <h3 class="fw-bold fs-6 mb-1">🔒 Your data, your control</h3>
+        <p class="small opacity-75 mb-0">Everything here lives under an anonymous session on this device. Delete it anytime — no questions, no traces.</p>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}
+
+{% block modals %}
+<!-- delete confirmation (body level: must not sit inside main's z-index stacking context) -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered"><div class="modal-content rounded-4">
+    <div class="modal-body p-4 p-sm-5 text-center">
+      <div class="fs-1 mb-3">🗑️</div>
+      <h3 class="font-display fw-semibold fs-5 mb-2">Delete all my data?</h3>
+      <p class="small text-muted mb-4">This permanently removes your saved check-ins, mood entries, plans, and chat history from this browser. This can't be undone.</p>
+      <div class="d-flex gap-2 justify-content-center">
+        <button class="btn btn-soft px-4 py-0 rounded-3" data-bs-dismiss="modal">Keep it</button>
+        <form method="post" action="{% url 'wellness:delete_data' %}">{% csrf_token %}
+          <button type="submit" class="btn btn-danger rounded-3 px-4">Yes, delete everything</button>
+        </form>
+      </div>
+    </div>
+  </div></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if has_data %}
+<script>
+(function () {
+  var ctx = document.getElementById('trendChart');
+  if (!ctx || typeof Chart === 'undefined') return;
+  var labels = {{ trend_labels|safe }};
+  var values = {{ trend_values|safe }};
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Stress level',
+        data: values,
+        borderColor: '#8b5cf6',
+        backgroundColor: 'rgba(139,92,246,.12)',
+        fill: true, tension: 0.45, spanGaps: false,
+        pointBackgroundColor: '#8b5cf6', pointRadius: 5, pointHoverRadius: 7,
+        borderWidth: 3
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        y: { min: 0.5, max: 3.5, ticks: { stepSize: 1, callback: function (v) { return v === 1 ? 'low' : v === 2 ? 'moderate' : v === 3 ? 'high' : ''; } }, grid: { color: 'rgba(139,92,246,.08)' } },
+        x: { grid: { display: false }, ticks: { maxTicksLimit: 7 } }
+      },
+      plugins: { legend: { display: false } }
+    }
+  });
+})();
+</script>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,144 @@
+{% extends "wellness/base.html" %}
+{% block title %}AI Wellness Assistant — MindWell{% endblock %}
+
+{% block content %}
+<section class="mx-auto" style="max-width:48rem">
+  <div class="text-center mb-4 reveal in">
+    <h1 class="font-display fw-semibold display-5 mb-3">AI Wellness <span class="grad-text">Assistant</span></h1>
+    <p class="text-muted mx-auto" style="max-width:36rem">A warm, judgment-free chat companion. Share what's on your mind — I'm here to listen and help you find small steps forward.</p>
+    <div class="mt-2">
+      {% if llm_mode == "ai" %}<span class="chip">✨ AI-powered replies</span>
+      {% else %}<span class="chip" title="Add an LLM API key for AI-powered replies">🌿 Guided support mode</span>{% endif %}
+    </div>
+  </div>
+
+  <div class="reveal in glass-card rounded-4 p-2 p-sm-3">
+    <div id="chatBox" class="chat-scroll overflow-auto p-2 p-sm-3 d-flex flex-column gap-3" style="height:26rem">
+      <div class="d-flex gap-2">
+        <div class="rounded-3 d-flex align-items-center justify-content-center text-white fw-bold flex-shrink-0" style="width:2.25rem;height:2.25rem;background:linear-gradient(135deg,#7dd3fc,#a78bfa,#6ee7b7)">✦</div>
+        <div class="bubble bubble-bot">Hello, I'm glad you're here. 💜 This is a safe space — tell me what's on your mind: studies, sleep, friendships, anything at all.</div>
+      </div>
+      {% for m in history %}
+      <div class="d-flex gap-2 {% if m.role == 'user' %}flex-row-reverse{% endif %}">
+        {% if m.role == 'user' %}
+        <div class="rounded-3 bg-light d-flex align-items-center justify-content-center flex-shrink-0" style="width:2.25rem;height:2.25rem">🙂</div>
+        <div class="bubble bubble-user">{{ m.text }}</div>
+        {% else %}
+        <div class="rounded-3 d-flex align-items-center justify-content-center text-white fw-bold flex-shrink-0" style="width:2.25rem;height:2.25rem;background:linear-gradient(135deg,#7dd3fc,#a78bfa,#6ee7b7)">✦</div>
+        <div class="bubble bubble-bot">{{ m.text }}</div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="d-flex flex-wrap gap-2 px-2 px-sm-3 pt-2">
+      <button class="quick-prompt chip border" data-q="I'm feeling anxious about my exams">😟 Exam anxiety</button>
+      <button class="quick-prompt chip border" data-q="I can't sleep well lately">😴 Sleep trouble</button>
+      <button class="quick-prompt chip border" data-q="Can you guide me through a breathing exercise?">🫁 Breathing help</button>
+      <button class="quick-prompt chip border" data-q="I feel lonely and low">💜 Feeling low</button>
+    </div>
+
+    <form id="chatForm" class="d-flex gap-2 p-2 p-sm-3">
+      {% csrf_token %}
+      <input id="chatInput" type="text" autocomplete="off" maxlength="800" placeholder="Type your message…"
+        class="form-control rounded-3 px-4 py-3" style="border-width:2px">
+      <button type="submit" id="sendBtn" class="btn-gradient px-4" aria-label="Send">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+      </button>
+    </form>
+    <p class="small text-muted px-3 pb-2 mb-1" style="font-size:.72rem">MindWell listens supportively but isn't a therapist. If you're in crisis, call <a class="fw-bold text-danger text-decoration-none" href="tel:112">112</a>.</p>
+  </div>
+
+  <div id="crisisSlot"></div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+  var box = document.getElementById('chatBox');
+  var form = document.getElementById('chatForm');
+  var input = document.getElementById('chatInput');
+  var sendBtn = document.getElementById('sendBtn');
+  box.scrollTop = box.scrollHeight;
+
+  function makeAvatar(role) {
+    var av = document.createElement('div');
+    if (role === 'user') {
+      av.className = 'rounded-3 bg-light d-flex align-items-center justify-content-center flex-shrink-0';
+      av.style.cssText = 'width:2.25rem;height:2.25rem';
+      av.textContent = '🙂';
+    } else {
+      av.className = 'rounded-3 d-flex align-items-center justify-content-center text-white fw-bold flex-shrink-0';
+      av.style.cssText = 'width:2.25rem;height:2.25rem;background:linear-gradient(135deg,#7dd3fc,#a78bfa,#6ee7b7)';
+      av.textContent = '✦';
+    }
+    return av;
+  }
+  function addMsg(role, text) {
+    var wrap = document.createElement('div');
+    wrap.className = 'd-flex gap-2' + (role === 'user' ? ' flex-row-reverse' : '');
+    var b = document.createElement('div');
+    b.className = 'bubble ' + (role === 'user' ? 'bubble-user' : 'bubble-bot');
+    b.textContent = text;
+    wrap.appendChild(makeAvatar(role)); wrap.appendChild(b);
+    box.appendChild(wrap);
+    box.scrollTop = box.scrollHeight;
+  }
+  function showTyping() {
+    var t = document.createElement('div');
+    t.className = 'd-flex gap-2'; t.id = 'typingRow';
+    t.appendChild(makeAvatar('assistant'));
+    var dots = document.createElement('div');
+    dots.className = 'typing';
+    dots.innerHTML = '<span></span><span></span><span></span>';
+    t.appendChild(dots);
+    box.appendChild(t); box.scrollTop = box.scrollHeight;
+  }
+  function hideTyping() { var t = document.getElementById('typingRow'); if (t) t.remove(); }
+
+  function showCrisis(resources) {
+    var slot = document.getElementById('crisisSlot');
+    var html = '<div class="mt-4 rounded-4 p-4 border border-2 border-danger-subtle" style="background:#fff1f2">'
+      + '<h3 class="fw-bold fs-6 mb-2">🤝 You deserve support right now</h3>'
+      + '<p class="small text-muted mb-3">Your message suggests you may be going through something very difficult. Please consider reaching out immediately:</p><div class="row g-3">';
+    resources.forEach(function (r) {
+      html += '<div class="col-sm-6"><div class="bg-white rounded-3 p-3 border h-100"><div class="fw-semibold small">' + r.name + '</div>'
+        + '<a class="text-danger fw-bold text-decoration-none" href="tel:' + r.contact.replace(/[\s/]/g, '') + '">' + r.contact + '</a>'
+        + '<div class="small text-muted">' + r.detail + '</div></div></div>';
+    });
+    slot.innerHTML = html + '</div></div>';
+  }
+
+  function send(text) {
+    text = (text || '').trim();
+    if (!text) return;
+    addMsg('user', text);
+    input.value = '';
+    sendBtn.disabled = true;
+    showTyping();
+    fetch("{% url 'wellness:api_chat' %}", {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+      body: JSON.stringify({ message: text })
+    })
+    .then(function (r) { return r.json(); })
+    .then(function (d) {
+      hideTyping();
+      if (d.error) { addMsg('assistant', d.error); }
+      else {
+        addMsg('assistant', d.reply);
+        if (d.crisis && d.crisis_resources && d.crisis_resources.length) showCrisis(d.crisis_resources);
+      }
+    })
+    .catch(function () { hideTyping(); addMsg('assistant', 'Hmm, something glitched on my side. Could you try again?'); })
+    .finally(function () { sendBtn.disabled = false; input.focus(); });
+  }
+
+  form.addEventListener('submit', function (e) { e.preventDefault(); send(input.value); });
+  document.querySelectorAll('.quick-prompt').forEach(function (b) {
+    b.addEventListener('click', function () { send(b.getAttribute('data-q')); });
+  });
+})();
+</script>
+{% endblock %}

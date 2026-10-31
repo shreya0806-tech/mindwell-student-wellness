@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}MindWell — Your Mental Wellness Matters{% endblock %}</title>
+<link href="/static/wellness/vendor/bootstrap.min.css" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/wellness/css/mindwell.css">
+{% block head %}{% endblock %}
+</head>
+<body>
+
+<!-- ambient background -->
+<div class="bg-scene" aria-hidden="true">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+
+<!-- ============ NAVBAR ============ -->
+<header class="sticky-top px-2 px-sm-3 pt-2 pt-sm-3" style="z-index:1030">
+  <nav class="navbar navbar-expand-md glass-nav rounded-4 mx-auto" style="max-width:72rem">
+    <div class="container-fluid px-3">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'wellness:home' %}">
+        <span class="logo-mark">
+          <svg viewBox="0 0 24 24" fill="none" style="width:1.4rem;height:1.4rem"><path d="M12 21c-4.5-3.2-8-6.6-8-11a5 5 0 0 1 8-4 5 5 0 0 1 8 4c0 4.4-3.5 7.8-8 11Z" fill="url(#lg)"/><defs><linearGradient id="lg" x1="4" y1="6" x2="20" y2="21"><stop stop-color="#7dd3fc"/><stop offset=".55" stop-color="#a78bfa"/><stop offset="1" stop-color="#6ee7b7"/></linearGradient></defs></svg>
+        </span>
+        <span class="font-display fw-bold fs-5">Mind<span class="text-violet">Well</span></span>
+      </a>
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mwNav" aria-controls="mwNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="mwNav">
+        <ul class="navbar-nav mx-auto mb-2 mb-md-0 fw-medium">
+          <li class="nav-item"><a class="nav-link mw-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'wellness:home' %}">Home</a></li>
+          <li class="nav-item"><a class="nav-link mw-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'wellness:dashboard' %}">Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link mw-link {% if request.resolver_match.url_name == 'write' %}active{% endif %}" href="{% url 'wellness:write' %}">Write</a></li>
+          <li class="nav-item"><a class="nav-link mw-link {% if request.resolver_match.url_name == 'assistant' %}active{% endif %}" href="{% url 'wellness:assistant' %}">Assistant</a></li>
+          <li class="nav-item"><a class="nav-link mw-link {% if request.resolver_match.url_name == 'plan' %}active{% endif %}" href="{% url 'wellness:plan' %}">My Plan</a></li>
+          <li class="nav-item"><a class="nav-link mw-link {% if request.resolver_match.url_name == 'resources' %}active{% endif %}" href="{% url 'wellness:resources' %}">Resources</a></li>
+          <li class="nav-item"><a class="nav-link mw-link {% if request.resolver_match.url_name == 'history' %}active{% endif %}" href="{% url 'wellness:history' %}">History</a></li>
+        </ul>
+        <div class="d-flex gap-2 align-items-center pb-2 pb-md-0">
+          <a href="{% url 'wellness:resources' %}#helplines" class="sos-btn d-none d-sm-inline-flex">SOS · Help</a>
+          <a href="{% url 'wellness:write' %}" class="btn-gradient btn-sm">Share How You Feel</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<!-- ============ CONTENT ============ -->
+<main class="position-relative" style="z-index:1">
+  <div class="container py-4 py-sm-5" style="max-width:72rem">
+    {% block content %}{% endblock %}
+  </div>
+</main>
+
+<!-- Modals live at body level so Bootstrap's backdrop (z-index 1050, appended
+     to body) can never trap them behind it. Never put a .modal inside <main>. -->
+{% block modals %}{% endblock %}
+
+<!-- ============ FOOTER ============ -->
+<footer class="position-relative mt-4" style="z-index:1">
+  <div class="container pb-5" style="max-width:72rem">
+    <div class="glass-card rounded-4 p-4 p-sm-5">
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="font-display fw-bold fs-5 mb-2">Mind<span class="text-violet">Well</span></div>
+          <p class="text-muted small lh-lg mb-0">A gentle space for students to understand and manage stress. Built with care, not judgment.</p>
+        </div>
+        <div class="col-md-4">
+          <div class="fw-bold mb-2">Explore</div>
+          <div class="d-flex flex-column gap-2 small">
+            <a class="footer-link" href="{% url 'wellness:model_info' %}">How the stress model works</a>
+            <a class="footer-link" href="{% url 'wellness:resources' %}">Wellness resources</a>
+            <a class="footer-link" href="{% url 'wellness:resources' %}#helplines">Crisis helplines</a>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="fw-bold mb-2">Please remember</div>
+          <p class="text-muted small lh-lg mb-0">MindWell is a support tool, not a medical service. It doesn't diagnose conditions. If you're in crisis, call <a class="fw-bold text-danger" href="tel:112">112</a> or <a class="fw-bold text-danger" href="tel:18005990019">1800-599-0019</a> (KIRAN, 24×7).</p>
+        </div>
+      </div>
+      <hr class="my-4 opacity-25">
+      <div class="d-flex flex-wrap justify-content-between gap-2 text-muted" style="font-size:.78rem">
+        <span>Made with care for student wellbeing.</span>
+        <span>Your words stay private — tracking is optional &amp; deletable.</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="/static/wellness/vendor/bootstrap.bundle.min.js"></script>
+<script src="/static/wellness/js/mindwell.js"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>
