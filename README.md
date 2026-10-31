@@ -58,10 +58,9 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-Open **http://127.0.0.1:8000** in your browser. That's it — no build step, no extra services.
+Open **http://127.0.0.1:8000** in your browser (or visit the live deployment at [**https://mindwell-ai-one.vercel.app/**](https://mindwell-ai-one.vercel.app/)). That's it — no build step, no extra services.
 
-> 📕 Prefer a guided walkthrough? See **`RUN_GUIDE.pdf`** (step-by-step with screenshots
-> described, troubleshooting, and demo script).
+> 🌐 **Live Demo:** You can also test the platform directly without any local setup at [**https://mindwell-ai-one.vercel.app/**](https://mindwell-ai-one.vercel.app/).
 
 ---
 
@@ -133,7 +132,6 @@ student-wellness-platform/
 ├── manage.py                    # Django entry point
 ├── requirements.txt             # Python dependencies
 ├── .env.example                 # Environment template (LLM keys, secrets)
-├── RUN_GUIDE.pdf                # Step-by-step run guide
 ├── mindwell/                    # Project settings (settings.py, urls.py, wsgi.py)
 └── wellness/                    # Main app
     ├── models.py                # Assessment, WellnessTask, MoodEntry (anonymous, session-keyed)
