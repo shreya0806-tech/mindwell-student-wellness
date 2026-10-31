@@ -4,6 +4,8 @@ A modern, calming web platform where students write about what they're feeling,
 get a gentle ML-based stress estimate, receive personalized supportive suggestions,
 chat with a wellness assistant, and follow a daily wellness plan.
 
+🌐 **Live Demo:** [https://mindwell-ai-one.vercel.app/](https://mindwell-ai-one.vercel.app/)
+
 **Stack:** Django · Bootstrap 5 · scikit-learn (TF-IDF + Logistic Regression) ·
 SQLite · Chart.js · optional LLM API for AI-personalized recommendations.
 
