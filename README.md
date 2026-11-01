@@ -58,7 +58,7 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-Open **http://127.0.0.1:8000** in your browser (or visit the live deployment at [**https://mindwell-ai-one.vercel.app/**](https://mindwell-ai-one.vercel.app/)). That's it — no build step, no extra services.
+Visit the live deployment at [**https://mindwell-ai-one.vercel.app/**](https://mindwell-ai-one.vercel.app/)). That's it — no build step, no extra services.
 
 > 🌐 **Live Demo:** You can also test the platform directly without any local setup at [**https://mindwell-ai-one.vercel.app/**](https://mindwell-ai-one.vercel.app/).
 
